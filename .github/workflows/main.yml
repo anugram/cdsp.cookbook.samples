@@ -41,5 +41,5 @@ jobs:
           context: .
           file: ./DPG_Banking_PCI_DSS/dpg-bank/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta_bank_api.outputs.tags }}
+          labels: ${{ steps.meta_bank_api.outputs.labels }}
