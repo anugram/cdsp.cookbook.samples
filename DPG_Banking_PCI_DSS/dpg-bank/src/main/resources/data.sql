@@ -1,0 +1,1 @@
+INSERT INTO accounts (id, username, password) VALUES (0, 'admin', 'password');

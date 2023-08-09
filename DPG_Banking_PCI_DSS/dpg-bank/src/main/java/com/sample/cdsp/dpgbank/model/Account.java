@@ -9,7 +9,13 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
-	@Column(name = "first_name")
+	@Column(name = "username")
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "first_name")
 	private String firstName;
 
 	@Column(name = "last_name")
@@ -30,6 +36,12 @@ public class Account {
 	@Column(name = "card_expiry")
 	private String cardExpiryDate;
 
+	@Column(name = "cvv")
+	private String cvv;
+
+	@Column(name = "expiry_date")
+	private String expiryDate;
+
 
 	public long getId() {
         return id;
@@ -37,6 +49,22 @@ public class Account {
 
     public void setId(long id) {
         this.id = id;
+    }    
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -95,16 +123,27 @@ public class Account {
         this.cardExpiryDate = cardExpiryDate;
     }
 
-    @Override
-    public String toString() {
-        return "Account [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", contactNumber="
-                + contactNumber + ", dateOfBirth=" + dateOfBirth + ", ssn=" + ssn + ", cardNum=" + cardNum
-                + ", cardExpiryDate=" + cardExpiryDate + "]";
+    public String getCvv() {
+        return cvv;
     }
 
-    public Account(long id, String firstName, String lastName, String contactNumber, String dateOfBirth, String ssn,
-            String cardNum, String cardExpiryDate) {
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public Account(long id, String username, String password, String firstName, String lastName, String contactNumber,
+            String dateOfBirth, String ssn, String cardNum, String cardExpiryDate, String cvv, String expiryDate) {
         this.id = id;
+        this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.contactNumber = contactNumber;
@@ -112,6 +151,16 @@ public class Account {
         this.ssn = ssn;
         this.cardNum = cardNum;
         this.cardExpiryDate = cardExpiryDate;
+        this.cvv = cvv;
+        this.expiryDate = expiryDate;
+    }
+
+    @Override
+    public String toString() {
+        return "Account [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
+                + ", lastName=" + lastName + ", contactNumber=" + contactNumber + ", dateOfBirth=" + dateOfBirth
+                + ", ssn=" + ssn + ", cardNum=" + cardNum + ", cardExpiryDate=" + cardExpiryDate + ", cvv=" + cvv
+                + ", expiryDate=" + expiryDate + "]";
     }
 
     public Account() {
