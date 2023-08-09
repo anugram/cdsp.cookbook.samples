@@ -24,23 +24,25 @@ export default function Register() {
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [contactNumber, setContactNumber] = useState();
+  const [ssn, setSsn] = useState();
   const [cvv, setCvv] = useState();
   const [cardNum, setCardNum] = useState();
   const [cardExpiryDate, setCardExpiryDate] = useState();
   const handleSubmit = async e => {
     e.preventDefault();
     
-    const auth_response = await createAccount({
+    await createAccount({
       username,
       password,
       firstName,
       lastName,
       contactNumber,
+      ssn,
       cvv,
       cardNum,
       cardExpiryDate
     });
-    sessionStorage.setItem('token',auth_response);
+    sessionStorage.removeItem('token');
     navigate('/Home'); 
   }
 
@@ -61,27 +63,32 @@ export default function Register() {
                 </div>
             </div>
             <h3 className="mt-8 leading-4 text-gray-800">Personal Details</h3>
-            <div class="grid grid-cols-3 gap-4 mt-4">
+            <div class="grid grid-cols-2 gap-4 mt-4">
                 <div>
                     <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="FirstName" onChange={e => setFirstName(e.target.value)} />
                 </div>
                 <div>
                     <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="LastName" onChange={e => setLastName(e.target.value)} />
                 </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4">
                 <div>
                     <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="ContactNumber" onChange={e => setContactNumber(e.target.value)} />
+                </div>
+                <div>
+                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="SSN" onChange={e => setSsn(e.target.value)} />
                 </div>
             </div>
             <h3 className="mt-8 leading-4 text-gray-800">Card Details</h3>
             <div class="grid grid-cols-3 gap-4 mt-4">
                 <div>
-                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="cardNum" onChange={e => setCardNum(e.target.value)} />
+                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="Credit Card Number" onChange={e => setCardNum(e.target.value)} />
                 </div>
                 <div>
-                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="cvv" onChange={e => setCvv(e.target.value)} />
+                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="text" placeholder="CVV" onChange={e => setCvv(e.target.value)} />
                 </div>
                 <div>
-                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="date" placeholder="cardExpiryDate" onChange={e => setCardExpiryDate(e.target.value)} />
+                    <input className="border border-gray-300 p-4 w-full rounded text-base leading-4 placeholder-gray-600 text-gray-600" type="date" onChange={e => setCardExpiryDate(e.target.value)} />
                 </div>
             </div>
             <button className="mt-8 border border-transparent hover:border-gray-300 bg-gray-900 hover:bg-white text-white hover:text-gray-900 flex justify-center items-center py-4 rounded w-full" onClick={handleSubmit}>

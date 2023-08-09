@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 export default function User() {
-    const listHeader = ["Home"];
+    const listHeader = ["Home", "Logout"];
 
     const [accounts, setAccounts] = useState("");
     useEffect(() => {
@@ -72,7 +72,7 @@ export default function User() {
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].firstName}&nbsp;{details[0].lastName}</td>
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].cardNum}</td>
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].cvv}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].expiryDate}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].cardExpiryDate}</td>
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].ssn}</td>
                                 </tr>
                             )
