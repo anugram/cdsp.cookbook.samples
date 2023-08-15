@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 async function loginUser(credentials) {
-    let host="localhost"
-    if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
-        host=process.env.REACT_APP_BACKEND_IP_ADDRESS
-    }
-    return fetch('http://'+host+':8080/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-    }).then(data => data.text())
+  let host="localhost"
+  let port=8080
+  if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
+      host=process.env.REACT_APP_BACKEND_IP_ADDRESS
+      port=process.env.REACT_APP_BACKEND_PORT
+  }
+  return fetch('http://'+host+':'+port+'/api/accounts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(credentials)
+  }).then(data => data.text())
 }
 
 export default function Login() {

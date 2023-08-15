@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 async function createAccount(account) {
     let token = sessionStorage.getItem('token');
     let host="localhost"
+    let port=8080
     if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
         host=process.env.REACT_APP_BACKEND_IP_ADDRESS
+        port=process.env.REACT_APP_BACKEND_PORT
     }
-    return fetch('http://'+host+':8080/api/accounts', {
+    return fetch('http://'+host+':'+port+'/api/accounts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

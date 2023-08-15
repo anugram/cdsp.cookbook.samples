@@ -23,8 +23,10 @@ spec:
           image: ciphertrust/cdsp.cookbook.samples:bank_app_ui
           imagePullPolicy: Always
           env:
-            - name: CM_URL
-              value: "localhost"
+            - name: API_IP
+              value: "192.168.2.190"
+            - name: API_PORT
+              value: 31000
           ports:
             - containerPort: 3000
       restartPolicy: Always
@@ -40,8 +42,10 @@ spec:
     - port: 8080
       targetPort: 8080
       protocol: TCP
+      nodePort: 31000
     - port: 3000
       targetPort: 3000
       protocol: TCP
+      nodePort: 31001
   selector:
     app: banking-app

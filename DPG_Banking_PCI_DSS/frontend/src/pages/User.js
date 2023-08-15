@@ -8,12 +8,14 @@ export default function User() {
     const [accounts, setAccounts] = useState("");
     useEffect(() => {
         let token = sessionStorage.getItem('token');
-        let host = "localhost";
+        let host="localhost"
+        let port=8080
         if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
             host=process.env.REACT_APP_BACKEND_IP_ADDRESS
+            port=process.env.REACT_APP_BACKEND_PORT
         }
 
-        let url = 'http://'+host+':8080/api/accounts'
+        let url = 'http://'+host+':'+port+'/api/accounts'
         axios
         .get(url, { headers: {"Authorization" : `Basic ${token}`} })
         .then((res) => {
