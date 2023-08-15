@@ -9,7 +9,7 @@ async function createAccount(account) {
         host=process.env.REACT_APP_BACKEND_IP_ADDRESS
         port=process.env.REACT_APP_BACKEND_PORT
     }
-    return fetch('http://'+host+':'+port+'/api/accounts', {
+    return fetch('http://'+host+':'+port+'/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -77,7 +77,7 @@ public class MainController {
 		}
 	}
 
-    @PostMapping("/accounts")
+    @PostMapping("/register")
 	public ResponseEntity<Account> createAccount(@RequestBody Account account) {
 		try {
 			Account _account = accountRepo.save(account);
