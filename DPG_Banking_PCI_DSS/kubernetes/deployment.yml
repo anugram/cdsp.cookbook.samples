@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: banking-app
+  namespace: dpg-bank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: banking-app
+  template:
+    metadata:
+      labels:
+        app: banking-app
+    spec:
+      containers:
+        - name: banking-app-api
+          image: ciphertrust/cdsp.cookbook.samples:bank_app_api
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080        
+        - name: banking-app-ui
+          image: ciphertrust/cdsp.cookbook.samples:bank_app_ui
+          imagePullPolicy: Always
+          env:
+            - name: CM_URL
+              value: "localhost"
+          ports:
+            - containerPort: 3000
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: banking-app
+  namespace: dpg-bank
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: banking-app
