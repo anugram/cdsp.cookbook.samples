@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 async function createAccount(account) {
     let token = sessionStorage.getItem('token');
     let host="localhost"
-    let port=8080
+    let port="8080"
     if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
         host=process.env.REACT_APP_BACKEND_IP_ADDRESS
         port=process.env.REACT_APP_BACKEND_PORT
