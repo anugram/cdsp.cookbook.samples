@@ -36,7 +36,7 @@ spec:
            - name: KMS
              value: 192.168.2.187
            - name: REG_TOKEN
-             value: REG_TOKEN
+             value: K8YalPQNhQz45ncu8db7nQSAUDsBR3EGiijmzrT7Kb0zLxuwN1Ithaapj5HoyNjS
            - name: DESTINATION_URL
              value: http://192.168.2.190:31000
            - name: DPG_PORT
