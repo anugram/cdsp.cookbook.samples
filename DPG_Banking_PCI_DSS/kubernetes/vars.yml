@@ -1,0 +1,31 @@
+this_node_address: 200.200.200.200
+this_node_private_ip: 1.1.1.1
+this_node_username: admin
+this_node_password: ChangeIt01!
+this_node_tenant_id:
+
+this_node_connection_string:
+  server_ip: "{{ this_node_address }}"
+  server_private_ip: "{{ this_node_private_ip }}"
+  server_port: 5432
+  user: "{{ this_node_username }}"
+  password: "{{ this_node_password }}"
+  auth_domain_path: "{{ this_node_tenant_id }}"
+  verify: False
+
+dpg_key_name: AnsibleKey
+char_set_name: AnsibleCharSet
+non_card_protection_policy_name: AnsibleNotCardProtPolicy
+fpe_card_protection_policy_name: AnsibleCardProtPolicy
+var_username: anurag
+var_password: T0uGhP@ssW0rD!
+var_email: anurag@example.com
+var_name: "Anurag Jain"
+var_userset_name_users: Customers
+var_userset_name_operators: Operators
+access_policy_name: AnsibleAccessPolicy
+dpg_policy_name: AnsibleDpgPolicy
+client_profile_name: AnsibleClientProfile
+nae_port_number: 9005
+ca_id: "kylo:kylo:naboo:localca:9de069b9-fb61-4ba3-a27c-329ed25b8e3c"
+ca_uuid: "9de069b9-fb61-4ba3-a27c-329ed25b8e3c"

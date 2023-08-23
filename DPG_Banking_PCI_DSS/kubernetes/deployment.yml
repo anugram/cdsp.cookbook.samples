@@ -26,9 +26,23 @@ spec:
             - name: API_IP
               value: "192.168.2.190"
             - name: API_PORT
-              value: "31000"
+              value: "9005"
           ports:
             - containerPort: 3000
+        - image: thalesciphertrust/ciphertrust-data-protection-gateway:1.1.0
+          imagePullPolicy: IfNotPresent
+          name: dpg-container
+          env:
+           - name: KMS
+             value: 192.168.2.187
+           - name: REG_TOKEN
+             value: REG_TOKEN
+           - name: DESTINATION_URL
+             value: http://192.168.2.190:31000
+           - name: DPG_PORT
+             value: 9005
+           - name: TLS_ENABLED
+             value: false
       restartPolicy: Always
 ---
 kind: Service
