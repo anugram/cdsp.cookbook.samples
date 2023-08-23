@@ -29,6 +29,7 @@
         port: 9006
         auto_gen_ca_id: "{{ ca_id }}"
         auto_registration: true
+        allow_unregistered: true
         cert_user_field: CN
         interface_type: nae
         mode: tls-cert-pw-opt
@@ -122,6 +123,19 @@
                 operation: "protect"
                 protection_policy: "{{ non_card_protection_policy_name }}"
             json_request_get_tokens:
+              - name: "[*].ssn"
+                operation: "reveal"
+                protection_policy: "{{ non_card_protection_policy_name }}"
+                access_policy: "{{ access_policy_name }}"
+              - name: "[*].cardNum"
+                operation: "reveal"
+                protection_policy: "{{ fpe_card_protection_policy_name }}"
+                access_policy: "{{ access_policy_name }}"
+              - name: "[*].firstName"
+                operation: "reveal"
+                protection_policy: "{{ non_card_protection_policy_name }}"
+                access_policy: "{{ access_policy_name }}"
+            json_response_get_tokens:
               - name: "[*].ssn"
                 operation: "reveal"
                 protection_policy: "{{ non_card_protection_policy_name }}"

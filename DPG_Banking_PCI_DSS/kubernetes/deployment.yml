@@ -18,7 +18,7 @@ spec:
           image: ciphertrust/cdsp.cookbook.samples:bank_app_api
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080        
+            - containerPort: 8080
         - name: banking-app-ui
           image: ciphertrust/cdsp.cookbook.samples:bank_app_ui
           imagePullPolicy: Always
@@ -26,7 +26,7 @@ spec:
             - name: API_IP
               value: "192.168.2.190"
             - name: API_PORT
-              value: "9005"
+              value: "31002"
           ports:
             - containerPort: 3000
         - image: thalesciphertrust/ciphertrust-data-protection-gateway:1.1.0
@@ -34,15 +34,13 @@ spec:
           name: dpg-container
           env:
            - name: KMS
-             value: 192.168.2.187
+             value: "192.168.2.187"
            - name: REG_TOKEN
-             value: K8YalPQNhQz45ncu8db7nQSAUDsBR3EGiijmzrT7Kb0zLxuwN1Ithaapj5HoyNjS
+             value: "U5nSmUfkn2BXBYaFtpiwRTk24IJoSrRTydXi0ENLwXudlTywL8FaWQO01BhYCdkC"
            - name: DESTINATION_URL
-             value: http://192.168.2.190:31000
+             value: "http://192.168.2.190:31000"
            - name: DPG_PORT
-             value: 9005
-           - name: TLS_ENABLED
-             value: false
+             value: '9005'
       restartPolicy: Always
 ---
 kind: Service
@@ -63,5 +61,23 @@ spec:
       targetPort: 3000
       protocol: TCP
       nodePort: 31001
+    - name: dpg
+      port: 9005
+      targetPort: 9005
+      nodePort: 31002
   selector:
     app: banking-app
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dpg-configmap
+  namespace: dpg-bank
+data:
+    TLS_ENABLED: 'false'
+    KMS: "192.168.2.187"
+    REG_TOKEN: "U5nSmUfkn2BXBYaFtpiwRTk24IJoSrRTydXi0ENLwXudlTywL8FaWQO01BhYCdkC"
+    DESTINATION_URL: "http://192.168.2.190:31000"
+    DPG_PORT: '9005'
