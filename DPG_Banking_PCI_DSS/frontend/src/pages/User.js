@@ -19,8 +19,8 @@ export default function User() {
         axios
         .get(url, { headers: {"Authorization" : `Basic ${token}`} })
         .then((res) => {
-            console.log(res.data);
-            setAccounts(res.data);
+            console.log(res.data.accounts);
+            setAccounts(res.data.accounts);
         })
         .catch((err) => console.log(err));
     }, []);

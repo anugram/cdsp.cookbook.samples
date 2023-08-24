@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sample.cdsp.dpgbank.bean.ListAccountsResponse;
 import com.sample.cdsp.dpgbank.model.Account;
 import com.sample.cdsp.dpgbank.model.User;
 import com.sample.cdsp.dpgbank.repository.AccountRepository;
@@ -52,7 +53,7 @@ public class MainController {
     }
 
     @GetMapping("/accounts")
-	public ResponseEntity<List<Account>> getAllAccounts(@RequestHeader(HttpHeaders.AUTHORIZATION) String header) {
+	public ResponseEntity<ListAccountsResponse> getAllAccounts(@RequestHeader(HttpHeaders.AUTHORIZATION) String header) {
 		try {
 			String usernameFromHeader = "";
 			if (header != null && header.toLowerCase().startsWith("basic")) {
@@ -76,7 +77,8 @@ public class MainController {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 
-			return new ResponseEntity<>(accounts, HttpStatus.OK);
+			ListAccountsResponse response = new ListAccountsResponse(accounts);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
