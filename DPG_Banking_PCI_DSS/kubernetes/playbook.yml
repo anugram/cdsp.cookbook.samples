@@ -164,6 +164,14 @@
       ignore_errors: true
 
     # Now start configuring CM for DPG and our APP APIs
+    - name: "Get user ID from its name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "username"
+        query_param_value: admin
+        resource_type: "users"
+      register: user
+
     - name: "Create Key"
       thalesgroup.ciphertrust.vault_keys2_save:
         op_type: create
@@ -171,6 +179,11 @@
         algorithm: aes
         size: 256
         usageMask: 3145740
+        unexportable: false
+        undeletable: false
+        meta:
+          ownerId: "{{ user['response']['id'] }}"
+          versionedKey: true
         localNode: "{{ this_node_connection_string }}"
       ignore_errors: true
 
