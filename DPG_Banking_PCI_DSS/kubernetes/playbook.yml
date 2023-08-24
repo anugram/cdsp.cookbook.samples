@@ -22,6 +22,10 @@
         state: absent
       ignore_errors: true
 
+    - name: Pause for a couple of minutes to let namespace terminate
+      ansible.builtin.pause:
+        minutes: 2
+
     # Get and delete DPG client profile
     - name: "Get Client Profile ID from Name"
       thalesgroup.ciphertrust.cm_resource_get_id_from_name:
@@ -325,7 +329,7 @@
         API_SERVER_PORT: "{{ API_SERVER_PORT }}"
         KMS_IP: "{{ KMS_IP }}"
         DPG_PORT: "{{ DPG_PORT }}"
-        DESTINATION_URL: "{{ DESTINATION_URL }}"
+        DEST_URL: "{{ DESTINATION_URL }}"
         REG_TOKEN: "{{ output['response']['data']['reg_token'] }}"
 
     - name: "Create K8s deployment file from template"
