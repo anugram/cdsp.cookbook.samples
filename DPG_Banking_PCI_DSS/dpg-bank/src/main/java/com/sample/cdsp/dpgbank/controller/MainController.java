@@ -60,7 +60,6 @@ public class MainController {
 				String base64Credentials = header.substring("Basic".length()).trim();
 				byte[] b64Decoded = Base64.getDecoder().decode(base64Credentials);
 				String credentials = new String(b64Decoded, StandardCharsets.UTF_8);
-				// credentials = username:password
 				final String[] values = credentials.split(":", 2);
 				usernameFromHeader = values[0];
 				System.out.println(usernameFromHeader);

@@ -260,6 +260,7 @@
         name: "{{ var_userset_name_operators }}"
         users:
           - admin
+          - operator
       register: userset_operators
 
     - name: "Create Access Policy"
