@@ -12,6 +12,158 @@
       - vars.yml
 
     tasks:
+    # first cleanup if the setup already exists
+    # Delete Namespace if already exists
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: dpg-bank
+        api_version: v1
+        kind: Namespace
+        state: absent
+      ignore_errors: true
+
+    # Get and delete DPG client profile
+    - name: "Get Client Profile ID from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: AnsibleClientProfile
+        resource_type: "client-profiles"
+      register: clientProfile
+      ignore_errors: true
+
+    - name: "Delete Client Profile"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ clientProfile['response']['id'] }}"
+        resource_type: "client-profiles"
+      ignore_errors: true
+
+    # Get and delete DPG Policy
+    - name: "Get DPG Policy from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ dpg_policy_name }}"
+        resource_type: "dpg-policies"
+      register: dpgPolicy
+      ignore_errors: true
+
+    - name: "Delete DPG Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ dpgPolicy['response']['id'] }}"
+        resource_type: "dpg-policies"
+      ignore_errors: true
+
+    # Get and delete Access Policy
+    - name: "Get Access Policy from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ access_policy_name }}"
+        resource_type: "access-policies"
+      register: accessPolicy
+      ignore_errors: true
+
+    - name: "Delete Access Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ accessPolicy['response']['id'] }}"
+        resource_type: "access-policies"
+      ignore_errors: true
+
+    # Get and delete User Set
+    - name: "Get UserSet from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ var_userset_name_users }}"
+        resource_type: "user-sets"
+      register: userset_clients
+      ignore_errors: true
+
+    - name: "Delete UserSet"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ userset_clients['response']['id'] }}"
+        resource_type: "user-sets"
+      ignore_errors: true
+
+    - name: "Get UserSet from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ var_userset_name_operators }}"
+        resource_type: "user-sets"
+      register: userset_admins
+      ignore_errors: true
+
+    - name: "Delete UserSet"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ userset_admins['response']['id'] }}"
+        resource_type: "user-sets"
+      ignore_errors: true
+
+    # Delete Protection Policies
+    - name: "Delete Protection Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ fpe_card_protection_policy_name }}"
+        resource_type: "protection-policies"
+      ignore_errors: true
+
+    - name: "Delete Protection Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ non_card_protection_policy_name }}"
+        resource_type: "protection-policies"
+      ignore_errors: true
+
+    # Get and delete character Set
+    - name: "Get Character Set from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ char_set_name }}"
+        resource_type: "character-sets"
+      register: charset
+      ignore_errors: true
+
+    - name: "Delete Character Set"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ charset['response']['id'] }}"
+        resource_type: "character-sets"
+      ignore_errors: true
+
+    # Delete NAE Interface
+    - name: "Delete Interface"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "nae_all_{{ nae_port_number }}"
+        resource_type: "interfaces"
+      ignore_errors: true
+
+    # Get and delete key
+    - name: "Get Key ID from its name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ dpg_key_name }}"
+        resource_type: "keys"
+      register: key
+      ignore_errors: true
+
+    - name: "Delete Key"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ key['response']['id'] }}"
+        resource_type: "keys"
+      ignore_errors: true
+
+    # Now start configuring CM for DPG and our APP APIs
     - name: "Create Key"
       thalesgroup.ciphertrust.vault_keys2_save:
         op_type: create
@@ -26,7 +178,7 @@
       thalesgroup.ciphertrust.interface_save:
         localNode: "{{ this_node_connection_string }}"
         op_type: create
-        port: 9006
+        port: "{{ nae_port_number }}"
         auto_gen_ca_id: "{{ ca_id }}"
         auto_registration: true
         allow_unregistered: true
@@ -111,7 +263,7 @@
         op_type: create
         name: "{{  dpg_policy_name }}"
         proxy_config:
-          - api_url: "/api/accounts"
+          - api_url: "/api/register"
             json_request_post_tokens:
               - name: "ssn"
                 operation: "protect"
@@ -122,19 +274,7 @@
               - name: "firstName"
                 operation: "protect"
                 protection_policy: "{{ non_card_protection_policy_name }}"
-            json_request_get_tokens:
-              - name: "[*].ssn"
-                operation: "reveal"
-                protection_policy: "{{ non_card_protection_policy_name }}"
-                access_policy: "{{ access_policy_name }}"
-              - name: "[*].cardNum"
-                operation: "reveal"
-                protection_policy: "{{ fpe_card_protection_policy_name }}"
-                access_policy: "{{ access_policy_name }}"
-              - name: "[*].firstName"
-                operation: "reveal"
-                protection_policy: "{{ non_card_protection_policy_name }}"
-                access_policy: "{{ access_policy_name }}"
+          - api_url: "/api/accounts"
             json_response_get_tokens:
               - name: "[*].ssn"
                 operation: "reveal"
@@ -165,6 +305,32 @@
         policy_id: "{{ policy['response']['id'] }}"
         localNode: "{{ this_node_connection_string }}"
       register: output
+
+    - name: set vars for silent installer
+      set_fact:
+        API_SERVER_IP: "{{ API_SERVER_IP }}"
+        API_SERVER_PORT: "{{ API_SERVER_PORT }}"
+        KMS_IP: "{{ KMS_IP }}"
+        DPG_PORT: "{{ DPG_PORT }}"
+        DESTINATION_URL: "{{ DESTINATION_URL }}"
+        REG_TOKEN: "{{ output['response']['data']['reg_token'] }}"
+
+    - name: "Create K8s deployment file from template"
+      template:
+        src: "deployment_template.j2"
+        dest: "/tmp/deployment.yml"
+
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: dpg-bank
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Create a Deployment by reading the definition from a local file
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/deployment.yml
 
     - name: Debug Output
       debug: var=output

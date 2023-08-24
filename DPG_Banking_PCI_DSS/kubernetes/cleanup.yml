@@ -131,7 +131,7 @@
     - name: "Delete Interface"
       thalesgroup.ciphertrust.cm_resource_delete:
         localNode: "{{ this_node_connection_string }}"
-        key: "nae_all_9006"
+        key: "nae_all_{{ nae_port_number }}"
         resource_type: "interfaces"
       ignore_errors: true
 
