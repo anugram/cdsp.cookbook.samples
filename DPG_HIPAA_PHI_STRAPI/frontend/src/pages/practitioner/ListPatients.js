@@ -15,7 +15,7 @@ export default function ListPatients() {
             port=process.env.REACT_APP_BACKEND_PORT
         }
 
-        let url = 'http://'+host+':'+port+'/api/patient-records'
+        let url = 'http://'+host+':'+port+'/api/patients'
         axios
         .get(url, { headers: {"Authorization" : `Basic ${token}`} })
         .then((res) => {

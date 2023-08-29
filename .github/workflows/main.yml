@@ -29,19 +29,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata (tags, labels) for Banking APP API Docker Image
         id: meta_bank_api
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ciphertrust/cdsp.cookbook.samples
           tags: bank_app_api
           
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata (tags, labels) for Banking APP UI Docker Image
         id: meta_bank_ui
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ciphertrust/cdsp.cookbook.samples
           tags: bank_app_ui
+
+      - name: Extract metadata (tags, labels) for Healthcare APP UI Docker Image
+        id: meta_strapi_phi_ui
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ciphertrust/cdsp.cookbook.samples
+          tags: hipaa_phi_app_ui
           
       - name: Build and push Docker image for Banking App API
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -60,3 +67,12 @@ jobs:
           push: true
           tags: ${{ steps.meta_bank_ui.outputs.tags }}
           labels: ${{ steps.meta_bank_ui.outputs.labels }}
+
+      - name: Build and push Docker image for StrAPI based HealthCare App UI
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: ./DPG_HIPAA_PHI_STRAPI/frontend/
+          file: ./DPG_HIPAA_PHI_STRAPI/frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_strapi_phi_ui.outputs.tags }}
+          labels: ${{ steps.meta_strapi_phi_ui.outputs.labels }}

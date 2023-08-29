@@ -24,7 +24,7 @@ async function createPatient(patient) {
         host=process.env.REACT_APP_BACKEND_IP_ADDRESS
         port=process.env.REACT_APP_BACKEND_PORT
     }
-    return fetch('http://'+host+':'+port+'/api/patient-records', {
+    return fetch('http://'+host+':'+port+'/api/patients', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,6 +64,7 @@ export default function AddPatient() {
         await createPatient({
             name,
             surname,
+            username,
             contactNumber,
             email,
             familyDoctorName,

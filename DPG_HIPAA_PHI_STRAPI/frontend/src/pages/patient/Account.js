@@ -15,7 +15,7 @@ export default function Account() {
         var header = `${window.atob(sessionStorage.getItem('header'))}`
         var username = header.split(':')[0];
 
-        let url = 'http://'+host+':'+port+'/api/patient-records?filters[name][$eq]='+username
+        let url = 'http://'+host+':'+port+'/api/patients?filters[username][$eq]='+username
         axios
         .get(url, { headers: {"Authorization" : `Basic ${token}`} })
         .then((res) => {
