@@ -13,7 +13,7 @@ export default function Account() {
         }
 
         var header = `${window.atob(sessionStorage.getItem('header'))}`
-        var username = header.split(',')[0];
+        var username = header.split(':')[0];
 
         let url = 'http://'+host+':'+port+'/api/patient-records?filters[name][$eq]='+username
         axios
