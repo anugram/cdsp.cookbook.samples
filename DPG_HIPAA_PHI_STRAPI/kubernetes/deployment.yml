@@ -1,0 +1,56 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: healthcare-app
+  namespace: dpg-hipaa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthcare-app
+  template:
+    metadata:
+      labels:
+        app: healthcare-app
+    spec:
+      containers:
+        - name: healthcare-app-strapi
+          image: ciphertrust/cdsp.cookbook.samples:strapi_hipaa_phi_backend
+          imagePullPolicy: Always
+          env:
+            - name: SERVER_IP
+              value: 
+          ports:
+            - containerPort: 1337
+        - name: healthcare-app-ui
+          image: ciphertrust/cdsp.cookbook.samples:hipaa_phi_app_ui
+          imagePullPolicy: Always
+          env:
+            - name: API_IP
+              value: "192.168.2.190"
+            - name: API_PORT
+              value: 31000
+          ports:
+            - containerPort: 3000        
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: healthcare-app
+  namespace: dpg-hipaa
+spec:
+  type: NodePort
+  ports:
+    - name: api
+      port: 1337
+      targetPort: 1337
+      protocol: TCP
+      nodePort: 31000
+    - name: ui
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+      nodePort: 31001
+  selector:
+    app: healthcare-app
