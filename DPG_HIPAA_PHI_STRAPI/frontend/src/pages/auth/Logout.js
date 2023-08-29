@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Logout() {
+    const navigate = useNavigate();
     useEffect(() => {
         sessionStorage.removeItem('token');
-    }, []);
-
-    const navigate = useNavigate();
-    navigate('/login');
+        sessionStorage.removeItem('header');
+        navigate('/login');
+    }, [navigate]);    
 
     return(
         <></>

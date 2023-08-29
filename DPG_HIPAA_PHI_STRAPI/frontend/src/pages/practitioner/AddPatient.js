@@ -17,6 +17,7 @@ async function createUser(user) {
     }).then(data => data.text())
 }
 async function createPatient(patient) {
+    let token = sessionStorage.getItem('token');
     let host="localhost"
     let port="1337"
     if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
@@ -26,13 +27,14 @@ async function createPatient(patient) {
     return fetch('http://'+host+':'+port+'/api/patient-records', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization' : `Bearer ${token}`
         },
         body: JSON.stringify({"data":patient})
     }).then(data => data.text())
 }
 
-export default function Register() {
+export default function AddPatient() {
     const navigate = useNavigate();
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
@@ -84,7 +86,7 @@ export default function Register() {
       <div class="w-full">
         <div class="w-3/4 h-screen place-items-center bg-gray-100">
             <div className="p-8 bg-gray-100 flex flex-col lg:w-full xl:w-full">
-                <h1 className="mt-8 leading-4 text-gray-800 font-bold">Create new Account</h1>
+                <h1 className="mt-8 leading-4 text-gray-800 font-bold">Add new Patient</h1>
                 <h3 className="mt-8 leading-4 text-gray-800 font-bold">Login Details (Optional)</h3>
                 <div class="grid grid-cols-3 gap-4 mt-4">
                     <div>

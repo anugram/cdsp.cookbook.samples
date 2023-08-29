@@ -1,25 +1,24 @@
 import React, {useEffect, useState} from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-export default function List() {
-    const listHeader = ["Home", "Logout"];
-
+export default function Account() {
     const [patients, setPatients] = useState("");
     useEffect(() => {
         let token = sessionStorage.getItem('token');
         let host="localhost"
-        let port="8080"
+        let port="1337"
         if (process.env.REACT_APP_BACKEND_IP_ADDRESS !== undefined) {
             host=process.env.REACT_APP_BACKEND_IP_ADDRESS
             port=process.env.REACT_APP_BACKEND_PORT
         }
 
-        let url = 'http://'+host+':'+port+'/api/patient-records'
+        var header = `${window.atob(sessionStorage.getItem('header'))}`
+        var username = header.split(',')[0];
+
+        let url = 'http://'+host+':'+port+'/api/patient-records?filters[name][$eq]='+username
         axios
         .get(url, { headers: {"Authorization" : `Basic ${token}`} })
         .then((res) => {
-            console.log(res.data.data);
             setPatients(res.data.data);
         })
         .catch((err) => console.log(err));
@@ -37,29 +36,18 @@ export default function List() {
     return(
         <>
         <div className="py-0">
-            <div className="container mx-auto">
-                <div className="bg-indigo-600 flex flex-row py-2">
-                {listHeader.map((item) => {
-                    return (
-                    <Link to={`/${item}`} key={item}>
-                        <div className="px-4">
-                        <p className="text-white capitalize">{item}</p>
-                        </div>
-                    </Link>
-                    );
-                })}
-                </div>
+            <div className="container mx-auto">                
                 <div className="content-center">
-                    <table className="content-center table-auto divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                    <table className="min-w-full text-left text-sm font-light">
+                        <thead className="border-b font-medium dark:border-neutral-500">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">ID</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Name</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Contact Number</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Age</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Email</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Family Doctor Name</th>
-                                <th scope="col" className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase ">Family Doctor Contact</th>
+                                <th scope="col" className="px-6 py-4">#</th>
+                                <th scope="col" className="px-6 py-4">Name</th>
+                                <th scope="col" className="px-6 py-4">Contact Number</th>
+                                <th scope="col" className="px-6 py-4">Age</th>
+                                <th scope="col" className="px-6 py-4">Email</th>
+                                <th scope="col" className="px-6 py-4">Family Doctor Name</th>
+                                <th scope="col" className="px-6 py-4">Family Doctor Contact</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -68,7 +56,7 @@ export default function List() {
                             const row = entry[0];
                             const details = entry[1];
                             return(
-                                <tr>
+                                <tr key={row}>
                                     <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">{row}</td>
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].attributes.name}&nbsp;{details[0].attributes.surname}</td>
                                     <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">{details[0].attributes.contactNumber}</td>
