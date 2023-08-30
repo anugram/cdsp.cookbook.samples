@@ -43,6 +43,13 @@ jobs:
           images: ciphertrust/cdsp.cookbook.samples
           tags: bank_app_ui
 
+      - name: Extract metadata (tags, labels) for Healthcare APP STRAPI Backend Docker Image
+        id: meta_strapi_phi_api
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ciphertrust/cdsp.cookbook.samples
+          tags: strapi_hipaa_phi_backend
+
       - name: Extract metadata (tags, labels) for Healthcare APP UI Docker Image
         id: meta_strapi_phi_ui
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
