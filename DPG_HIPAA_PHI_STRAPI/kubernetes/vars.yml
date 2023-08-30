@@ -1,0 +1,32 @@
+this_node_address: 192.168.2.187
+this_node_private_ip: 1.1.1.1
+this_node_username: admin
+this_node_password: ChangeIt01!
+this_node_tenant_id:
+
+this_node_connection_string:
+  server_ip: "{{ this_node_address }}"
+  server_private_ip: "{{ this_node_private_ip }}"
+  server_port: 5432
+  user: "{{ this_node_username }}"
+  password: "{{ this_node_password }}"
+  auth_domain_path: "{{ this_node_tenant_id }}"
+  verify: False
+
+dpg_key_name: HIPAAKey
+char_set_name: HIPAACharSet
+protection_policy: HIPAAProtPolicy
+patients_userset: Patients
+nurses_userset: Practitioners
+access_policy: HIPAAAccessPolicy
+dpg_policy_name: HIPAADpgPolicy
+client_profile_name: HIPAAClientProfile
+nae_port_number: 9006
+ca_id: "kylo:kylo:naboo:localca:9de069b9-fb61-4ba3-a27c-329ed25b8e3c"
+ca_uuid: "9de069b9-fb61-4ba3-a27c-329ed25b8e3c"
+API_SERVER_IP: 192.168.2.190
+API_SERVER_PORT: 31002
+KMS_IP: 192.168.2.187
+DPG_PORT: 9006
+DESTINATION_URL: "http://192.168.2.190:31000"
+STRAPI_HOST: 192.168.2.190

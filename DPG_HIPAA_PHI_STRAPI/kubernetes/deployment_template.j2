@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: SERVER_IP
-              value: "192.168.2.190"
+              value: "{{ STRAPI_HOST }}"
           ports:
             - containerPort: 1337
         - name: healthcare-app-ui
@@ -27,11 +27,23 @@ spec:
           imagePullPolicy: Always
           env:
             - name: API_IP
-              value: "192.168.2.190"
+              value: "{{ API_SERVER_IP }}"
             - name: API_PORT
-              value: "31000"
+              value: "{{ API_SERVER_PORT }}"
           ports:
-            - containerPort: 3000        
+            - containerPort: 3000
+        - image: thalesciphertrust/ciphertrust-data-protection-gateway:1.1.0
+          imagePullPolicy: IfNotPresent
+          name: dpg-container
+          env:
+           - name: KMS
+             value: "{{ KMS_IP }}"
+           - name: REG_TOKEN
+             value: "{{ REG_TOKEN }}"
+           - name: DESTINATION_URL
+             value: "{{ DEST_URL }}"
+           - name: DPG_PORT
+             value: '{{ DPG_PORT }}'
       restartPolicy: Always
 ---
 kind: Service
@@ -52,5 +64,9 @@ spec:
       targetPort: 3000
       protocol: TCP
       nodePort: 31001
+    - name: dpg
+      port: {{ DPG_PORT }}
+      targetPort: {{ DPG_PORT }}
+      nodePort: 31002
   selector:
     app: healthcare-app

@@ -1,0 +1,367 @@
+#
+# (c) 2023 Thales Group. All rights reserved.
+# Author: Anurag Jain, Developer Advocate, Thales
+#
+
+---
+  - name: "Sample playbook to configure and setup a new DPG instance"
+    hosts: localhost
+    connection: local
+
+    vars_files:
+      - vars.yml
+
+    tasks:
+    # first cleanup if the setup already exists
+    # Delete Namespace if already exists
+    - name: Delete k8s namespace
+      kubernetes.core.k8s:
+        name: dpg-hipaa
+        api_version: v1
+        kind: Namespace
+        state: absent
+      ignore_errors: true
+
+    - name: Pause for a couple of minutes to let namespace terminate
+      ansible.builtin.pause:
+        minutes: 2
+
+    # Get and delete DPG client profile
+    - name: "Get Client Profile ID from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ client_profile_name }}"
+        resource_type: "client-profiles"
+      register: clientProfile
+      ignore_errors: true
+
+    - name: "Delete Client Profile"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ clientProfile['response']['id'] }}"
+        resource_type: "client-profiles"
+      ignore_errors: true
+
+    # Get and delete DPG Policy
+    - name: "Get DPG Policy from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ dpg_policy_name }}"
+        resource_type: "dpg-policies"
+      register: dpgPolicy
+      ignore_errors: true
+
+    - name: "Delete DPG Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ dpgPolicy['response']['id'] }}"
+        resource_type: "dpg-policies"
+      ignore_errors: true
+
+    # Get and delete Access Policy
+    - name: "Get Access Policy from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ access_policy }}"
+        resource_type: "access-policies"
+      register: accessPolicy
+      ignore_errors: true
+
+    - name: "Delete Access Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ accessPolicy['response']['id'] }}"
+        resource_type: "access-policies"
+      ignore_errors: true
+
+    # Get and delete User Set
+    - name: "Get UserSet from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ patients_userset }}"
+        resource_type: "user-sets"
+      register: userset_clients
+      ignore_errors: true
+
+    - name: "Delete UserSet"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ userset_clients['response']['id'] }}"
+        resource_type: "user-sets"
+      ignore_errors: true
+
+    - name: "Get UserSet from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ nurses_userset }}"
+        resource_type: "user-sets"
+      register: userset_admins
+      ignore_errors: true
+
+    - name: "Delete UserSet"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ userset_admins['response']['id'] }}"
+        resource_type: "user-sets"
+      ignore_errors: true
+
+    # Delete Protection Policies
+    - name: "Delete Protection Policy"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ protection_policy }}"
+        resource_type: "protection-policies"
+      ignore_errors: true
+
+    # Get and delete character Set
+    - name: "Get Character Set from Name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ char_set_name }}"
+        resource_type: "character-sets"
+      register: charset
+      ignore_errors: true
+
+    - name: "Delete Character Set"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ charset['response']['id'] }}"
+        resource_type: "character-sets"
+      ignore_errors: true
+
+    # Delete NAE Interface
+    - name: "Delete Interface"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "nae_all_{{ nae_port_number }}"
+        resource_type: "interfaces"
+      ignore_errors: true
+
+    # Get and delete key
+    - name: "Get Key ID from its name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "name"
+        query_param_value: "{{ dpg_key_name }}"
+        resource_type: "keys"
+      register: key
+      ignore_errors: true
+
+    - name: "Delete Key"
+      thalesgroup.ciphertrust.cm_resource_delete:
+        localNode: "{{ this_node_connection_string }}"
+        key: "{{ key['response']['id'] }}"
+        resource_type: "keys"
+      ignore_errors: true
+
+    # Now start configuring CM for DPG and our APP APIs
+    - name: "Get user ID from its name"
+      thalesgroup.ciphertrust.cm_resource_get_id_from_name:
+        localNode: "{{ this_node_connection_string }}"
+        query_param: "username"
+        query_param_value: admin
+        resource_type: "users"
+      register: user
+
+    - name: "Create Key"
+      thalesgroup.ciphertrust.vault_keys2_save:
+        op_type: create
+        name: "{{ dpg_key_name }}"
+        algorithm: aes
+        size: 256
+        usageMask: 3145740
+        unexportable: false
+        undeletable: false
+        meta:
+          ownerId: "{{ user['response']['id'] }}"
+          versionedKey: true
+        localNode: "{{ this_node_connection_string }}"
+      ignore_errors: true
+
+    - name: "Create Interface"
+      thalesgroup.ciphertrust.interface_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: create
+        port: "{{ nae_port_number }}"
+        auto_gen_ca_id: "{{ ca_id }}"
+        auto_registration: true
+        allow_unregistered: true
+        cert_user_field: CN
+        interface_type: nae
+        mode: tls-cert-pw-opt
+        network_interface: all
+        trusted_cas:
+          local:
+            - "{{ ca_id }}"
+      ignore_errors: true
+
+    - name: "Create Character Set"
+      thalesgroup.ciphertrust.dpg_character_set_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: create
+        name: "{{ char_set_name }}"
+        range:
+          - 0030-0039
+          - 0041-005A
+          - 0061-007A
+        encoding: UTF-8
+      register: charset
+    
+    - name: "Create Protection Policy for ASCII Chars"
+      thalesgroup.ciphertrust.dpg_protection_policy_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: create
+        name: "{{ protection_policy }}"
+        key: "{{ dpg_key_name }}"
+        tweak: "1628462495815733"
+        tweak_algorithm: "SHA1"
+        algorithm: "FPE/FF3/ASCII"
+        character_set_id: "{{ charset['response']['id'] }}"
+      register: protection_policy_non_card
+
+    - name: "User Set Creation"
+      thalesgroup.ciphertrust.dpg_user_set_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: "create"
+        name: "{{ patients_userset }}"
+        users:
+          - patient1
+          - patient2
+          - patient3
+          - patient4
+          - patient5
+      register: userset_users
+
+    - name: "User Set Creation"
+      thalesgroup.ciphertrust.dpg_user_set_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: "create"
+        name: "{{ nurses_userset }}"
+        users:
+          - nurse
+      register: userset_operators
+
+    - name: "Create Access Policy"
+      thalesgroup.ciphertrust.dpg_access_policy_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: "create"
+        name: "{{ access_policy }}"
+        default_reveal_type: "Ciphertext"
+        user_set_policy:
+          - reveal_type: Plaintext
+            user_set_id: "{{ userset_users['response']['id'] }}"
+          - reveal_type: Ciphertext
+            user_set_id: "{{ userset_operators['response']['id'] }}"
+
+    - name: "Create DPG Policy"
+      thalesgroup.ciphertrust.dpg_policy_save:
+        localNode: "{{ this_node_connection_string }}"
+        op_type: create
+        name: "{{  dpg_policy_name }}"
+        proxy_config:
+          - api_url: "/api/patients"
+            json_request_post_tokens:
+              - name: "data.name"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.surname"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.contactNumber"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.email"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.address"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.ailment"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+              - name: "data.medicine"
+                operation: "protect"
+                protection_policy: "{{ protection_policy }}"
+          - api_url: "/api/patients"
+            json_response_get_tokens:
+              - name: "data.[*].attributes.name"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.surname"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.contactNumber"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.email"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.address"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.ailment"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+              - name: "data.[*].attributes.medicine"
+                operation: "reveal"
+                protection_policy: "{{ protection_policy }}"
+                access_policy: "{{ access_policy }}"
+      register: policy
+
+    - name: "Create Client Profile"
+      thalesgroup.ciphertrust.dpg_client_profile_save:
+        name: "{{ client_profile_name }}"
+        op_type: create
+        app_connector_type: DPG
+        lifetime: 30d
+        cert_duration: 730
+        max_clients: 200
+        ca_id: "{{ ca_id }}"
+        nae_iface_port: "{{ nae_port_number }}"
+        csr_parameters:
+          csr_cn: admin
+        policy_id: "{{ policy['response']['id'] }}"
+        localNode: "{{ this_node_connection_string }}"
+      register: output
+
+    - name: set vars for silent installer
+      set_fact:
+        API_SERVER_IP: "{{ API_SERVER_IP }}"
+        API_SERVER_PORT: "{{ API_SERVER_PORT }}"
+        STRAPI_HOST: "{{ STRAPI_HOST }}"
+        KMS_IP: "{{ KMS_IP }}"
+        DPG_PORT: "{{ DPG_PORT }}"
+        DEST_URL: "{{ DESTINATION_URL }}"
+        REG_TOKEN: "{{ output['response']['data']['reg_token'] }}"
+
+    - name: "Create K8s deployment file from template"
+      template:
+        src: "deployment_template.j2"
+        dest: "/tmp/hipaa_deployment.yml"
+
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: dpg-hipaa
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Create a Deployment by reading the definition from a local file
+      kubernetes.core.k8s:
+        state: present
+        src: /tmp/hipaa_deployment.yml
+
+    - name: Debug Output
+      debug: var=output
