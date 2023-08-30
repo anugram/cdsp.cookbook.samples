@@ -17,7 +17,7 @@ export default function Account() {
 
         let url = 'http://'+host+':'+port+'/api/patients?filters[username][$eq]='+username
         axios
-        .get(url, { headers: {"Authorization" : `Basic ${token}`} })
+        .get(url, { headers: {"Authorization" : `Basic ${sessionStorage.getItem('header')}`} })
         .then((res) => {
             setPatients(res.data.data);
         })

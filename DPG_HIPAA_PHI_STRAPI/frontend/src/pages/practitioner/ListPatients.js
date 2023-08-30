@@ -3,8 +3,6 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
 export default function ListPatients() {
-    
-
     const [patients, setPatients] = useState("");
     useEffect(() => {
         let token = sessionStorage.getItem('token');
@@ -17,7 +15,7 @@ export default function ListPatients() {
 
         let url = 'http://'+host+':'+port+'/api/patients'
         axios
-        .get(url, { headers: {"Authorization" : `Basic ${token}`} })
+        .get(url, { headers: {"Authorization" : `Basic ${sessionStorage.getItem('header')}`} })
         .then((res) => {
             setPatients(res.data.data);
         })
